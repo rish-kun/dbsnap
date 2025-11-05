@@ -66,7 +66,7 @@ export default async function takeBackup(dbname: String = "postgres") {
 
   // Remove temp file inside the container
   await runSudo(password, ["docker", "exec", container, "rm", tmpPath]);
-  awaitconsole.log(`Temporary backup file removed: ${tmpPath}`);
+  await console.log(`Temporary backup file removed: ${tmpPath}`);
 }
 
 takeBackup();
