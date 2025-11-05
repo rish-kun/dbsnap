@@ -56,7 +56,7 @@ export default async function takeBackup(dbname: String = "postgres") {
   console.log("Backup process finished inside the container...");
 
   // Copy backup file out of the container
-  await runSudo(password, [
+  runSudo(password, [
     "docker",
     "cp",
     `${container}:${tmpPath}`,
@@ -65,7 +65,7 @@ export default async function takeBackup(dbname: String = "postgres") {
   console.log(`Backup taken: ./backups/${backupFileName}`);
 
   // Remove temp file inside the container
-  await runSudo(password, ["docker", "exec", container, "rm", tmpPath]);
+  runSudo(password, ["docker", "exec", container, "rm", tmpPath]);
   console.log(`Temporary backup file removed: ${tmpPath}`);
 }
 
