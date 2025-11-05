@@ -1,5 +1,7 @@
 import { $ } from "bun";
 const enc = new TextEncoder();
+import { config } from "dotenv";
+config({ path: "/var/www/dbsnap/dbsnap/.env" });
 
 async function runSudo(password: string, args: string[]) {
   const proc = Bun.spawn(["sudo", "-S", "-p", "", ...args], {
