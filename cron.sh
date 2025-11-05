@@ -1,1 +1,2 @@
 cd /var/www/dbsnap && /home/rishit/.bun/bin/bun /var/www/dbsnap/dbsnap/index.ts
+echo "Cron job executed"
