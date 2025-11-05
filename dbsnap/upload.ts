@@ -1,0 +1,16 @@
+import { $ } from "bun";
+
+export default async function takeBackup(dbname: String) {
+  const date = new Date();
+  const timestamp = date.toISOString().replace(/[:.]/g, "-");
+  const backupFileName = `${dbname}-backup-${timestamp}.sql`;
+  const container = "Oasis_2025-postgres";
+  const tmpPath = "/tmp/backup.dump"; // inside container
+  // or generate a timestamped name
+  // Command to take a database backup (example for PostgreSQL)
+  const password = process.env.SCRIPT_PASSWORD || "your_password_here";
+  await $`mkdir -p ./backups`;
+  await $`sudo -S << ${password} docker exec ${container} pg_dump -U postgres -Fc -f ${tmpPath} postgres`;
+  await $`sudo -S << ${password}  docker cp ${container}:${tmpPath} ./backups/${backupFileName}`;
+  await $`sudo -S << ${password}  docker exec ${container} rm ${tmpPath}`;
+}
