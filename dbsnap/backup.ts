@@ -31,8 +31,8 @@ export default async function takeBackup(dbname: String = "postgres") {
   // Command to take a database backup (example for PostgreSQL)
   const password = process.env.SCRIPT_PASSWORD || "your_password_here";
   await $`mkdir -p ./backups`;
-  console.log(`Starting backup for database: ${dbname}`);
-  const proc = Bun.spawn({
+  await console.log(`Starting backup for database: ${dbname}`);
+  const proc = await Bun.spawn({
     cmd: [
       "sudo",
       "-S",
@@ -53,20 +53,20 @@ export default async function takeBackup(dbname: String = "postgres") {
     stdout: "pipe",
     stderr: "pipe",
   });
-  console.log("Backup process finished inside the container...");
+  await console.log("Backup process finished inside the container...");
 
   // Copy backup file out of the container
-  runSudo(password, [
+  await runSudo(password, [
     "docker",
     "cp",
     `${container}:${tmpPath}`,
     `./backups/${backupFileName}`,
   ]);
-  console.log(`Backup taken: ./backups/${backupFileName}`);
+  await console.log(`Backup taken: ./backups/${backupFileName}`);
 
   // Remove temp file inside the container
-  runSudo(password, ["docker", "exec", container, "rm", tmpPath]);
-  console.log(`Temporary backup file removed: ${tmpPath}`);
+  await runSudo(password, ["docker", "exec", container, "rm", tmpPath]);
+  awaitconsole.log(`Temporary backup file removed: ${tmpPath}`);
 }
 
 takeBackup();
