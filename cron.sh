@@ -1,0 +1,1 @@
+cd /var/www/dbsnap && bun index.ts
