@@ -88,6 +88,7 @@ export default async function takeBackup(dbname: string = "postgres") {
   console.log(
     `${colors.magenta}🧹 Temporary backup file removed: ${tmpPath}${colors.reset}`
   );
+  return `./backups/${backupFileName}`;
 }
 
-takeBackup();
+// takeBackup();
