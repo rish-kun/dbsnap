@@ -1,1 +1,1 @@
-cd /var/www/dbsnap && bun index.ts
+cd /var/www/dbsnap && /home/rishit/.bun/bin/bun index.ts
