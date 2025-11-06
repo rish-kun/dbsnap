@@ -13,7 +13,9 @@ export function sendEmail(
     from: "DB_BACKUP_INFO <oasis2025dvmlogs@gmail.com>",
     subject: "Database Snapshot and upload Successful",
     html: `
-  <strong>${text}</strong> at <i>${date}</i>
+  <strong>${text}</strong> at <i>${date.toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    })}</i>
   <br/>
   <a href="${url}">Backup URL</a>
   `,
