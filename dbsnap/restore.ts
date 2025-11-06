@@ -110,6 +110,43 @@ export default async function restoreSelected(selectedId: string) {
       `${colors.red}❌ Database restore failed:${colors.reset}`,
       error
     );
+    console.log(
+      `${colors.yellow}⚠️  Trying other backup state.${colors.reset}`
+    );
+    await Bun.stdin.stream();
+    await runSudo(password, [
+      "docker",
+      "exec",
+      `${container}`,
+      "psql",
+      "-U",
+      "postgres",
+      "-c",
+      '"DROP DATABASE IF EXISTS postgres WITH (FORCE);"',
+    ]);
+    await runSudo(password, [
+      "docker",
+      "exec",
+      `${container}`,
+      "psql",
+      "-U",
+      "postgres",
+      "-c",
+      '"CREATE DATABASE postgres;"',
+    ]);
+    await runSudo(password, [
+      "docker",
+      "exec",
+      `${container}`,
+      "pg_restore",
+      "-U",
+      "postgres",
+      "-d",
+      "postgres",
+      "-j",
+      "4",
+      "/backup.dump",
+    ]);
   }
 }
 
