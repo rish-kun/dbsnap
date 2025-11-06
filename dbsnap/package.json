@@ -10,6 +10,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "dotenv": "^17.2.3",
     "node-appwrite": "^20.3.0"
   }
