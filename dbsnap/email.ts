@@ -11,7 +11,7 @@ export function sendEmail(
   const msg = {
     to: "oasis2025dvmlogs@gmail.com", // Remove the "DB_BACKUP_INFO <>" wrapper
     from: {
-      email: "noreply@yourdomain.com", // Use your VERIFIED domain, not Gmail
+      email: "oasis2025dvmlogs@gmail.com", // Use your VERIFIED domain, not Gmail
       name: "DB Backup System",
     },
     replyTo: "oasis2025dvmlogs@gmail.com", // Optional: where replies go
