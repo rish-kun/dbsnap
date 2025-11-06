@@ -80,7 +80,7 @@ export default async function restoreSelected(selectedId: string) {
     "docker",
     "cp",
     `${currentPath}`,
-    `${container}:$/backup.dump`,
+    `${container}:/backup.dump`,
   ]);
   console.log(`${colors.green}✅ File restored successfully:${colors.reset}`);
 
