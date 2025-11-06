@@ -35,7 +35,9 @@ async function selectFileToRestore() {
     return new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime();
   });
   const choices = sortedFiles.map((file) => ({
-    name: `${file.name} (${new Date(file.$createdAt).toLocaleString()})`,
+    name: `${file.name} (${new Date(file.$createdAt).toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    })})`,
     value: file.$id,
     description: `File ID: ${file.$id}, Size: ${(
       file.sizeOriginal /
