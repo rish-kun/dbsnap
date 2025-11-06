@@ -26,7 +26,9 @@ async function runSudo(password: string, args: string[]) {
 export default async function takeBackup(dbname: string = "postgres") {
   const date = new Date();
   const timestamp = date.toISOString().replace(/[:.]/g, "-");
-  const backupFileName = `${dbname}-backup-${timestamp}.sql`;
+  const backupFileName = `${dbname}-backup-${timestamp
+    .replace(/T/, "_")
+    .replace(/Z$/, "")}.sql`;
   const container = "Oasis_2025-postgres";
   const tmpPath = "backup.dump";
   const password = process.env.SCRIPT_PASSWORD || "your_password_here";
