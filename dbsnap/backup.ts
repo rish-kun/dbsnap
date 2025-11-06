@@ -87,11 +87,17 @@ export default async function takeBackup(dbname: string = "postgres") {
     `${colors.green}✅ Backup taken: ./backups/${backupFileName}${colors.reset}`
   );
 
-  // Remove temp file inside the container
-  await runSudo(password, ["docker", "exec", container, "rm", tmpPath]);
-  console.log(
-    `${colors.magenta}🧹 Temporary backup file removed: ${tmpPath}${colors.reset}`
-  );
+  try {
+    // Remove temp file inside the container
+    await runSudo(password, ["docker", "exec", container, "rm", tmpPath]);
+    console.log(
+      `${colors.magenta}🧹 Temporary backup file removed: ${tmpPath}${colors.reset}`
+    );
+  } catch (err) {
+    console.log(
+      `${colors.magenta}⚠️  Could not remove temporary backup file: ${tmpPath}${colors.reset}`
+    );
+  }
   return `./backups/${backupFileName}`;
 }
 
