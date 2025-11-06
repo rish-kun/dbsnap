@@ -1,6 +1,8 @@
 import { select } from "@inquirer/prompts";
 import { Client, Storage } from "node-appwrite";
 import { getFilesList } from "./file_list";
+import { config } from "dotenv";
+config({ path: "/var/www/dbsnap/dbsnap/.env" });
 const colors = {
   reset: "\x1b[0m",
   blue: "\x1b[36m",
