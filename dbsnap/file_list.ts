@@ -1,4 +1,4 @@
-import { Client, Storage } from "node-appwrite";
+import { Client, Query, Storage } from "node-appwrite";
 
 export async function getFilesList() {
   const apiUrl = process.env.API_URL ?? "https://sgp.cloud.appwrite.io/v1";
@@ -13,16 +13,42 @@ export async function getFilesList() {
 
   const storage = new Storage(client);
 
-  const result = await storage.listFiles({
-    bucketId: bucketId,
-  });
+  // Fetch all files using cursor-based pagination
+  const allFiles = [];
+  const limit = 100; // Max items per request
+  let lastFileId: string | null = null;
+  let hasMore = true;
 
-  //   for (const file of result.files) {
+  while (hasMore) {
+    const queries = [Query.limit(limit)];
+
+    // Add cursor for pagination (skip first request)
+    if (lastFileId) {
+      queries.push(Query.cursorAfter(lastFileId));
+    }
+
+    const result = await storage.listFiles({
+      bucketId: bucketId,
+      queries: queries,
+    });
+
+    allFiles.push(...result.files);
+
+    // Check if we got fewer results than the limit (reached the end)
+    if (result.files.length < limit) {
+      hasMore = false;
+    } else {
+      // Use the last file's ID as cursor for next request
+      lastFileId = result.files[result.files.length - 1].$id;
+    }
+  }
+
+  //   for (const file of allFiles) {
   //     console.log(
   //       `File ID: ${file.$id}, Name: ${file.name}, Created At: ${new Date(
   //         file.$createdAt
   //       ).toISOString()}`
   //     );
   //   }
-  return result.files;
+  return allFiles;
 }
