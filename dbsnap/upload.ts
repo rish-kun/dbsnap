@@ -1,8 +1,6 @@
 // bun add node-appwrite
 import { Client, Storage, ID } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
-import { config } from "dotenv";
-config({ path: "/var/www/dbsnap/dbsnap/.env" });
 
 export const uploadBackup = async (filePath: string, fileName: string) => {
   const apiUrl = process.env.API_URL ?? "https://sgp.cloud.appwrite.io/v1";

@@ -43,6 +43,25 @@ export async function getFilesList() {
     }
   }
 
+  return allFiles;
+}
+
+    const result = await storage.listFiles({
+      bucketId: bucketId,
+      queries: queries,
+    });
+
+    allFiles.push(...result.files);
+
+    // Check if we got fewer results than the limit (reached the end)
+    if (result.files.length < limit) {
+      hasMore = false;
+    } else {
+      // Use the last file's ID as cursor for next request
+      lastFileId = result.files[result.files.length - 1].$id;
+    }
+  }
+
   //   for (const file of allFiles) {
   //     console.log(
   //       `File ID: ${file.$id}, Name: ${file.name}, Created At: ${new Date(

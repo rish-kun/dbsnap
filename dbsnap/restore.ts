@@ -1,8 +1,12 @@
 import { select } from "@inquirer/prompts";
 import { Client, Storage } from "node-appwrite";
 import { getFilesList } from "./file_list";
-import { config } from "dotenv";
-config({ path: "/var/www/dbsnap/dbsnap/.env" });
+import { loadConfig } from "./config";
+
+// Load configuration
+const config = await loadConfig();
+Object.assign(process.env, config);
+
 const colors = {
   reset: "\x1b[0m",
   blue: "\x1b[36m",
@@ -12,12 +16,19 @@ const colors = {
   red: "\x1b[31m",
 };
 const enc = new TextEncoder();
-async function runSudo(password: string, args: string[]) {
-  const proc = Bun.spawn(["sudo", "-S", "-p", "", ...args], {
-    stdin: enc.encode(password + "\n"),
+async function runSudo(password: string | undefined, args: string[]) {
+  const cmd = password ? ["sudo", "-S", "-p", "", ...args] : args;
+  
+  const options: any = {
     stdout: "pipe",
     stderr: "pipe",
-  });
+  };
+  
+  if (password) {
+    options.stdin = enc.encode(password + "\n");
+  }
+
+  const proc = Bun.spawn(cmd, options);
 
   const [code, out, err] = await Promise.all([
     proc.exited,
@@ -63,8 +74,8 @@ export default async function restoreSelected(selectedId: string) {
   const projectId = process.env.PROJECT_ID ?? "your_project_id_here";
   const bucketId = process.env.BUCKET_ID ?? "your_bucket_id_here";
   const apiKey = process.env.API_BACKUP_KEY ?? "your_api_key_here"; // Server key
-  const container = "Oasis_2025-postgres";
-  const password = process.env.SCRIPT_PASSWORD || "your_password_here";
+  const container = process.env.DOCKER_CONTAINER || "Oasis_2025-postgres";
+  const password = process.env.SCRIPT_PASSWORD;
 
   const client = new Client()
     .setEndpoint(apiUrl) // Your API Endpoint
@@ -92,7 +103,7 @@ export default async function restoreSelected(selectedId: string) {
     await runSudo(password, [
       "docker",
       "exec",
-      "Oasis_2025-postgres",
+      container,
       "pg_restore",
       "-U",
       "postgres",
@@ -115,7 +126,8 @@ export default async function restoreSelected(selectedId: string) {
     console.log(
       `${colors.yellow}⚠️  Trying other backup state.${colors.reset}`
     );
-    await Bun.stdin.stream();
+    // await Bun.stdin.stream(); // Removed blocking wait in automated context? Or keep it? Keeping for manual restore.
+    
     await runSudo(password, [
       "docker",
       "exec",
