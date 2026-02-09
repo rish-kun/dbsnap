@@ -1,14 +1,21 @@
 import { $ } from "bun";
 const enc = new TextEncoder();
-import { config } from "dotenv";
-config({ path: "/var/www/dbsnap/dbsnap/.env" });
 
-async function runSudo(password: string, args: string[]) {
-  const proc = Bun.spawn(["sudo", "-S", "-p", "", ...args], {
-    stdin: enc.encode(password + "\n"),
+async function runSudo(password: string | undefined, args: string[]) {
+  const cmd = password
+    ? ["sudo", "-S", "-p", "", ...args]
+    : args;
+
+  const options: any = {
     stdout: "pipe",
     stderr: "pipe",
-  });
+  };
+
+  if (password) {
+    options.stdin = enc.encode(password + "\n");
+  }
+
+  const proc = Bun.spawn(cmd, options);
 
   const [code, out, err] = await Promise.all([
     proc.exited,
@@ -23,15 +30,17 @@ async function runSudo(password: string, args: string[]) {
   return { out, err, code };
 }
 
-export default async function takeBackup(dbname: string = "postgres") {
+export default async function takeBackup(
+  dbname: string = "postgres",
+  container: string = "Oasis_2025-postgres"
+) {
   const date = new Date();
   const timestamp = date.toISOString().replace(/[:.]/g, "-");
   const backupFileName = `${dbname}-backup-${timestamp
     .replace(/T/, "_")
     .replace(/Z$/, "")}.sql`;
-  const container = "Oasis_2025-postgres";
   const tmpPath = "backup.dump";
-  const password = process.env.SCRIPT_PASSWORD || "your_password_here";
+  const password = process.env.SCRIPT_PASSWORD;
 
   // Color codes
   const colors = {
@@ -45,33 +54,24 @@ export default async function takeBackup(dbname: string = "postgres") {
   await $`mkdir -p ./backups`;
 
   console.log(
-    `${colors.blue}🚀 Starting backup for database: ${dbname}${colors.reset}`
+    `${colors.blue}🚀 Starting backup for database: ${dbname} in container ${container}${colors.reset}`
   );
 
-  const proc = Bun.spawn({
-    cmd: [
-      "sudo",
-      "-S",
-      "-p",
-      "",
-      "docker",
-      "exec",
-      container,
-      "pg_dump",
-      "-U",
-      "postgres",
-      "-Fc",
-      "-f",
-      tmpPath,
-      "postgres",
-    ],
-    stdin: new TextEncoder().encode(password + "\n"),
-    stdout: "pipe",
-    stderr: "pipe",
-  });
+  const dumpCmd = [
+    "docker",
+    "exec",
+    container,
+    "pg_dump",
+    "-U",
+    "postgres",
+    "-Fc",
+    "-f",
+    tmpPath,
+    "postgres",
+  ];
 
-  // Wait for the process to complete
-  await proc.exited;
+  await runSudo(password, dumpCmd);
+
   console.log(
     `${colors.yellow}⚙️  Backup process finished inside the container...${colors.reset}`
   );

@@ -5,16 +5,23 @@ export function sendEmail(
   url: string = ""
 ) {
   const apiKey = process.env.SENDGRID_API_KEY;
-  sgMail.setApiKey(apiKey!);
+  if (!apiKey) {
+    console.error("SENDGRID_API_KEY is not set. Skipping email.");
+    return;
+  }
+  sgMail.setApiKey(apiKey);
   const date = new Date();
+  
+  const toEmail = process.env.EMAIL_TO || "oasis2025dvmlogs@gmail.com";
+  const fromEmail = process.env.EMAIL_FROM || "oasis2025dvmlogs@gmail.com";
 
   const msg = {
-    to: "oasis2025dvmlogs@gmail.com", // Remove the "DB_BACKUP_INFO <>" wrapper
+    to: toEmail,
     from: {
-      email: "oasis2025dvmlogs@gmail.com", // Use your VERIFIED domain, not Gmail
+      email: fromEmail,
       name: "DB Backup System",
     },
-    replyTo: "oasis2025dvmlogs@gmail.com", // Optional: where replies go
+    replyTo: fromEmail,
     subject: `Database Snapshot - ${date.toLocaleString("en-IN", {
       timeZone: "Asia/Kolkata",
     })}`,
@@ -34,7 +41,7 @@ export function sendEmail(
     `,
     text: `${text}\nTime: ${date.toLocaleString("en-IN", {
       timeZone: "Asia/Kolkata",
-    })}\nBackup URL: ${url}`, // Add plain text version
+    })}\nBackup URL: ${url}`,
   };
 
   sgMail
