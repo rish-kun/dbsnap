@@ -1,3 +1,12 @@
-docker cp ./backups/backup.dump Oasis_2025-postgres:/backup.dump
-# pg_restore  -U postgres -d postgres --create --clean --if-exists -j 4 backup.sql
-docker exec Oasis_2025-postgres pg_restore -U postgres -d postgres --clean --if-exists -j 4 /backup.dump
+#!/bin/bash
+# Restore script updated to use the compiled DBSnap CLI
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if [ -z "$1" ]; then
+    echo "Starting interactive restore..."
+    cd "$DIR/dbsnap" && ./dbsnap
+else
+    echo "Running headlesbs restore for ID $1..."
+    cd "$DIR/dbsnap" && ./dbsnap --restore "$1"
+fi

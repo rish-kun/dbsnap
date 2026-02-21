@@ -1,11 +1,9 @@
-import { $ } from "bun";
 import path from "path";
 
-// Resolves to the directory where this script is located
-const CONFIG_DIR = import.meta.dir;
-const ENV_PATH = path.join(CONFIG_DIR, ".env");
+// For robust execution, use the directory where this script is located (src/services) and go up one level to dbsnap root.
+const ENV_PATH = path.join(import.meta.dir, "../../.env");
 
-export async function loadConfig() {
+export async function loadConfig(): Promise<Record<string, string>> {
   const envFile = Bun.file(ENV_PATH);
   if (await envFile.exists()) {
     const text = await envFile.text();
