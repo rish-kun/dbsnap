@@ -11,9 +11,24 @@ import { runConfigEditor } from "./services/config-editor";
 
 async function runHeadlessBackup() {
   const config = await loadConfig();
-  console.log("Starting headless backup...");
+  
+  const args = process.argv.slice(2);
+  const containerArg = args.find((_, i) => args[i - 1] === "--container");
+  const hostArg = args.find((_, i) => args[i - 1] === "--host");
+  const portArg = args.find((_, i) => args[i - 1] === "--port");
+  
+  const runConfig = {
+    ...config,
+    DOCKER_CONTAINER: containerArg || config.DOCKER_CONTAINER || "Oasis_2025-postgres",
+    DB_HOST: hostArg || "localhost",
+    DB_PORT: portArg || "5432",
+  };
+  
+  console.log(`Starting headless backup for container: ${runConfig.DOCKER_CONTAINER}`);
+  console.log(`Host: ${runConfig.DB_HOST}, Port: ${runConfig.DB_PORT}`);
+  
   try {
-    const localPath = await takeBackup(config, "postgres", console.log);
+    const localPath = await takeBackup(runConfig, "postgres", console.log);
     const fileName = localPath.split("/").pop() ?? "backup.dump";
     const response = await uploadBackup(config, localPath, fileName, console.log);
     const fileUrl = `${config.API_URL}/storage/buckets/${response.bucketId}/files/${response.$id}/view`;

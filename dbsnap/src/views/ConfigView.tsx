@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import { useKeyboard, useTerminalDimensions } from "@opentui/react";
 import { saveConfig } from "../services/config";
-import { setupCronJob } from "../services/cron";
 import { LogViewer } from "../components/LogViewer";
+import { CronPanel } from "./CronPanel";
 
-export function ConfigView({ config, isFocused, onConfigUpdate }: { 
+export type ConfigViewProps = { 
   config: Record<string, string>, 
   isFocused: boolean, 
   onConfigUpdate: (c: Record<string, string>) => void 
-}) {
+};
+
+export function ConfigView({ config, isFocused, onConfigUpdate }: ConfigViewProps) {
   const [formData, setFormData] = useState<Record<string, string>>(config);
   const [focusedField, setFocusedField] = useState<string>("API_URL");
   const [logs, setLogs] = useState<string[]>([]);
+  const [activeSection, setActiveSection] = useState<"config" | "cron">("config");
   const { height } = useTerminalDimensions();
   
   const fields = [
@@ -43,28 +46,44 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: {
     }
   };
 
-  const handleCron = async () => {
-    addLog("Setting up daily cron job (midnight)...");
-    await setupCronJob("0 0 * * *", addLog);
-  };
-
   useKeyboard((key) => {
     if (!isFocused) return;
     
-    const currentIndex = fields.findIndex(f => f.key === focusedField);
+    if (key.ctrl && key.name === "j") {
+      setActiveSection(activeSection === "config" ? "cron" : "config");
+      return;
+    }
     
-    if (key.name === "down" || key.name === "tab") {
-      const nextIndex = (currentIndex + 1) % fields.length;
-      setFocusedField(fields[nextIndex].key);
-    } else if (key.name === "up") {
-      const prevIndex = (currentIndex - 1 + fields.length) % fields.length;
-      setFocusedField(fields[prevIndex].key);
-    } else if (key.ctrl && key.name === "s") {
-      handleSave();
-    } else if (key.ctrl && key.name === "c") {
-      handleCron();
+    if (activeSection === "config") {
+      const currentIndex = fields.findIndex(f => f.key === focusedField);
+      
+      if (key.name === "down" || key.name === "tab") {
+        const nextIndex = (currentIndex + 1) % fields.length;
+        setFocusedField(fields[nextIndex].key);
+      } else if (key.name === "up") {
+        const prevIndex = (currentIndex - 1 + fields.length) % fields.length;
+        setFocusedField(fields[prevIndex].key);
+      } else if (key.ctrl && key.name === "s") {
+        handleSave();
+      }
     }
   });
+
+  if (activeSection === "cron") {
+    return (
+      <box style={{ flexDirection: "column", gap: 1, height: "100%", overflow: "hidden" }}>
+        <text fg="#FFA500" bold>⚙️ Cron Jobs Configuration</text>
+        
+        <box style={{ flexDirection: "row" }}>
+          <text fg="#666">[Tab/↑/↓] Navigate</text>
+          <text fg="#444">  </text>
+          <text fg="#666">[Ctrl+J] Back to Config</text>
+        </box>
+
+        <CronPanel config={formData} isFocused={isFocused} logs={logs} setLogs={setLogs} />
+      </box>
+    );
+  }
 
   return (
     <box style={{ flexDirection: "column", gap: 1, height: "100%", overflow: "hidden" }}>
@@ -75,7 +94,7 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: {
         <text fg="#444">  </text>
         <text fg="#666">[Ctrl+S] Save</text>
         <text fg="#444">  </text>
-        <text fg="#666">[Ctrl+C] Setup Cron</text>
+        <text fg="#666">[Ctrl+J] Cron Jobs</text>
       </box>
 
       <box style={{ 

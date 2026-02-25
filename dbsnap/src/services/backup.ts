@@ -7,8 +7,11 @@ export async function takeBackup(
   dbname: string = "postgres",
   onLog?: (msg: string) => void
 ) {
-  const container = config.DOCKER_CONTAINER || "Oasis_2025-postgres";
+  const container = config.DOCKER_CONTAINER || config.DB_HOST === "db" ? "postgres" : "Oasis_2025-postgres";
   const password = config.SCRIPT_PASSWORD;
+  const dbHost = config.DB_HOST || "localhost";
+  const dbPort = config.DB_PORT || "5432";
+  const isRemote = dbHost !== "localhost" && dbHost !== "127.0.0.1";
   
   const date = new Date();
   const timestamp = date.toISOString().replace(/[:.]/g, "-");
@@ -21,7 +24,34 @@ export async function takeBackup(
   
   await $`mkdir -p ${backupsDir}`;
 
-  if (onLog) onLog(`🚀 Starting backup for database: ${dbname} in container ${container}`);
+  if (onLog) onLog(`🚀 Starting backup for database: ${dbname}`);
+  if (onLog) onLog(`📦 Target: ${isRemote ? `${dbHost}:${dbPort}` : `container ${container}`}`);
+
+  if (isRemote) {
+    if (onLog) onLog(`🌐 Using remote database connection: ${dbHost}:${dbPort}`);
+    const pgDumpCmd = [
+      "pg_dump",
+      "-h", dbHost,
+      "-p", dbPort,
+      "-U", "postgres",
+      "-Fc",
+      "-f", backupFilePath,
+      dbname,
+    ];
+    const env = { ...process.env, PGPASSWORD: password || "postgres" };
+    const proc = Bun.spawn(pgDumpCmd, { env });
+    const output = await new Response(proc.stdout).text();
+    const errOutput = await new Response(proc.stderr).text();
+    
+    if (proc.exitCode !== 0) {
+      throw new Error(`pg_dump failed: ${errOutput || output}`);
+    }
+    
+    if (onLog) onLog(`✅ Backup taken: ${backupFilePath}`);
+    return backupFilePath;
+  }
+
+  if (onLog) onLog(`🐳 Using docker container: ${container}`);
 
   const dumpCmd = [
     "docker",
@@ -40,7 +70,6 @@ export async function takeBackup(
 
   if (onLog) onLog(`⚙️  Backup process finished inside the container...`);
 
-  // Copy backup file out of the container
   await runSudo(password, [
     "docker",
     "cp",
@@ -51,7 +80,6 @@ export async function takeBackup(
   if (onLog) onLog(`✅ Backup taken: ${backupFilePath}`);
 
   try {
-    // Remove temp file inside the container
     await runSudo(password, ["docker", "exec", container, "rm", tmpPath], onLog);
     if (onLog) onLog(`🧹 Temporary backup file removed: ${tmpPath}`);
   } catch (err) {

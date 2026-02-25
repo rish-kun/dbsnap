@@ -34,28 +34,28 @@ export function App() {
 
   if (!configLoaded) {
     return (
-      <box style={{ width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}>
+      <box style={{ width: "100%", height: "100%", backgroundColor: "#000000", justifyContent: "center", alignItems: "center" }}>
         <text fg="#FFA500">Loading Configuration...</text>
       </box>
     );
   }
 
   return (
-    <box style={{ flexDirection: "column", width: "100%", height: "100%" }}>
+    <box style={{ flexDirection: "column", width: "100%", height: "100%", backgroundColor: "#000000" }}>
       <box style={{ flexDirection: "row", paddingX: 1, backgroundColor: "#1a1a1a", height: 3, alignItems: "center" }}>
         <text fg="#00FF00" bold>📸 DBSnap CLI</text>
         <text fg="#666">  │  </text>
         <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
       </box>
       
-      <box style={{ flexGrow: 1, padding: 1, overflow: "hidden" }}>
+      <box style={{ flexGrow: 1, padding: 1, overflow: "hidden", backgroundColor: "#000000" }}>
         {activeTab === 0 && <DashboardView config={config} />}
         {activeTab === 1 && <BackupView config={config} isFocused={true} />}
         {activeTab === 2 && <RestoreView config={config} isFocused={true} />}
         {activeTab === 3 && <ConfigView config={config} isFocused={true} onConfigUpdate={setConfig} />}
       </box>
       
-      <box style={{ height: 2, paddingX: 1, borderTop: true, borderColor: "#333", alignItems: "center" }}>
+      <box style={{ height: 2, paddingX: 1, borderTop: true, borderColor: "#333", alignItems: "center", backgroundColor: "#1a1a1a" }}>
         <text fg="#666">[1-4] Tabs</text>
         <text fg="#444">  </text>
         <text fg="#666">[Ctrl+Q] Quit</text>
