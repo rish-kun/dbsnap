@@ -7,6 +7,7 @@ import { takeBackup } from "./services/backup";
 import { uploadBackup, getFilesList, downloadBackup } from "./services/storage";
 import { sendEmail } from "./services/email";
 import { restoreSelected } from "./services/restore";
+import { runConfigEditor } from "./services/config-editor";
 
 async function runHeadlessBackup() {
   const config = await loadConfig();
@@ -30,7 +31,7 @@ async function runHeadlessRestore(fileId?: string) {
   console.log("Starting headless restore...");
   try {
     let targetId = fileId;
-    
+
     if (!targetId) {
       console.log("No file ID provided, fetching latest backup...");
       const files = await getFilesList(config, console.log);
@@ -41,7 +42,7 @@ async function runHeadlessRestore(fileId?: string) {
       const sorted = files.sort((a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime());
       targetId = sorted[0].$id;
     }
-    
+
     console.log(`Restoring backup ID: ${targetId}`);
     const localPath = "./backup.dump";
     await downloadBackup(config, targetId, localPath, console.log);
@@ -56,12 +57,17 @@ async function runHeadlessRestore(fileId?: string) {
 
 async function main() {
   const args = process.argv.slice(2);
-  
+
+  if (args.includes("--config")) {
+    await runConfigEditor();
+    return;
+  }
+
   if (args.includes("--backup") || args.includes("--run")) {
     await runHeadlessBackup();
     return;
   }
-  
+
   if (args.includes("--restore")) {
     const restoreIndex = args.indexOf("--restore");
     const fileId = args[restoreIndex + 1];
