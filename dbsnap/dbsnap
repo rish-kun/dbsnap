@@ -1,3 +1,14 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-bun run $DIR/src/index.tsx "$@"
+
+if command -v bun >/dev/null 2>&1; then
+    BUN_BIN="$(command -v bun)"
+elif [ -x "$HOME/.bun/bin/bun" ]; then
+    BUN_BIN="$HOME/.bun/bin/bun"
+else
+    echo "Error: bun is not installed or not available in PATH."
+    echo "Install Bun from https://bun.sh or add it to PATH."
+    exit 1
+fi
+
+exec "$BUN_BIN" run "$DIR/src/index.tsx" "$@"

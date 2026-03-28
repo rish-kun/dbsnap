@@ -1,14 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { useKeyboard, useTerminalDimensions } from "@opentui/react";
-import { getFilesList, downloadBackup } from "../services/storage";
+import { getFilesList, downloadBackup, type DownloadProgress } from "../services/storage";
 import { restoreSelected } from "../services/restore";
 import { LogViewer } from "../components/LogViewer";
+import { ProgressBar } from "../components/ProgressBar";
+
+function formatBytes(bytes: number): string {
+  if (bytes <= 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const idx = Math.min(units.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)));
+  const value = bytes / Math.pow(1024, idx);
+  return `${value.toFixed(idx === 0 ? 0 : 2)} ${units[idx]}`;
+}
+
+function formatSpeed(bytesPerSecond?: number): string {
+  if (!bytesPerSecond || !Number.isFinite(bytesPerSecond) || bytesPerSecond <= 0) return "--";
+  return `${formatBytes(bytesPerSecond)}/s`;
+}
+
+function formatEta(etaSeconds?: number): string {
+  if (etaSeconds === undefined || !Number.isFinite(etaSeconds)) return "--";
+  const totalSeconds = Math.max(0, Math.round(etaSeconds));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
 
 export function RestoreView({ config, isFocused }: { config: Record<string, string>, isFocused: boolean }) {
   const [files, setFiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [running, setRunning] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [downloadMetrics, setDownloadMetrics] = useState<DownloadProgress>({ percent: 0, downloadedBytes: 0 });
+  const [restoreProgress, setRestoreProgress] = useState(0);
+  const [phase, setPhase] = useState<"idle" | "download" | "restore">("idle");
   const [logs, setLogs] = useState<string[]>([]);
   const { height, width } = useTerminalDimensions();
 
@@ -37,19 +63,33 @@ export function RestoreView({ config, isFocused }: { config: Record<string, stri
     if (files.length === 0 || running) return;
     const file = files[selectedIndex];
     setRunning(true);
+    setPhase("download");
+    setDownloadProgress(0);
+    setDownloadMetrics({ percent: 0, downloadedBytes: 0 });
+    setRestoreProgress(0);
     setLogs([]);
     try {
       addLog(`Downloading backup: ${file.name}...`);
       const localPath = "./backup.dump";
-      await downloadBackup(config, file.$id, localPath, addLog);
+      await downloadBackup(config, file.$id, localPath, addLog, (progress) => {
+        setDownloadMetrics(progress);
+        setDownloadProgress(progress.percent);
+      });
       
       addLog(`Starting restore process...`);
-      await restoreSelected(config, localPath, addLog);
+      setPhase("restore");
+      setRestoreProgress(0);
+      await restoreSelected(config, localPath, addLog, {
+        onStageProgress: (progress) => {
+          setRestoreProgress(progress);
+        },
+      });
       
       addLog(`✅ Complete! Database restored.`);
     } catch (err: any) {
       addLog(`❌ Restore Error: ${err.message || String(err)}`);
     } finally {
+      setPhase("idle");
       setRunning(false);
     }
   };
@@ -131,7 +171,24 @@ export function RestoreView({ config, isFocused }: { config: Record<string, stri
       )}
 
       {running && (
-        <text fg="#FFA500">⏳ Restore in progress...</text>
+        <box style={{ flexDirection: "column", gap: 0 }}>
+          <text fg="#FFA500">⏳ Restore in progress...</text>
+          <ProgressBar
+            label="Download"
+            progress={downloadProgress}
+            width={Math.max(16, Math.floor(width * 0.4))}
+            color={phase === "download" ? "#0FF" : "#666"}
+          />
+          <text fg="#888">
+            {`   ${formatBytes(downloadMetrics.downloadedBytes)}${downloadMetrics.totalBytes ? ` / ${formatBytes(downloadMetrics.totalBytes)}` : ""}  •  ${formatSpeed(downloadMetrics.bytesPerSecond)}  •  ETA ${formatEta(downloadMetrics.etaSeconds)}`}
+          </text>
+          <ProgressBar
+            label="Restore "
+            progress={restoreProgress}
+            width={Math.max(16, Math.floor(width * 0.4))}
+            color={phase === "restore" ? "#0F0" : "#666"}
+          />
+        </box>
       )}
 
       <LogViewer logs={logs} title="Restore Logs" />

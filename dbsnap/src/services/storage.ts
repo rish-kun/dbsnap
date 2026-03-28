@@ -1,8 +1,37 @@
 import { Client, Query, Storage, ID } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
 
+function normalizeAppwriteEndpoint(apiUrl?: string): string {
+  const base = (apiUrl ?? "https://sgp.cloud.appwrite.io/v1").trim().replace(/\/+$/, "");
+  return base.endsWith("/v1") ? base : `${base}/v1`;
+}
+
+function createStorageClient(config: Record<string, string>): Storage {
+  const client = new Client()
+    .setEndpoint(normalizeAppwriteEndpoint(config.API_URL))
+    .setProject(config.PROJECT_ID ?? "")
+    .setKey(config.API_BACKUP_KEY ?? "");
+
+  return new Storage(client);
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes <= 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const idx = Math.min(units.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)));
+  const value = bytes / Math.pow(1024, idx);
+  return `${value.toFixed(idx === 0 ? 0 : 2)} ${units[idx]}`;
+}
+
+export type DownloadProgress = {
+  percent: number;
+  downloadedBytes: number;
+  totalBytes?: number;
+  bytesPerSecond?: number;
+  etaSeconds?: number;
+};
+
 export async function getFilesList(config: Record<string, string>, onLog?: (msg: string) => void) {
-  const apiUrl = config.API_URL ?? "https://sgp.cloud.appwrite.io/v1";
   const projectId = config.PROJECT_ID;
   const bucketId = config.BUCKET_ID;
   const apiKey = config.API_BACKUP_KEY; // Server key
@@ -12,12 +41,7 @@ export async function getFilesList(config: Record<string, string>, onLog?: (msg:
     throw new Error("Missing Appwrite config");
   }
 
-  const client = new Client()
-    .setEndpoint(apiUrl)
-    .setProject(projectId)
-    .setKey(apiKey);
-
-  const storage = new Storage(client);
+  const storage = createStorageClient(config);
   const allFiles = [];
   const limit = 100;
   let lastFileId: string | null = null;
@@ -41,7 +65,12 @@ export async function getFilesList(config: Record<string, string>, onLog?: (msg:
     if (result.files.length < limit) {
       hasMore = false;
     } else {
-      lastFileId = result.files[result.files.length - 1].$id;
+      const lastFile = result.files[result.files.length - 1];
+      if (!lastFile) {
+        hasMore = false;
+      } else {
+        lastFileId = lastFile.$id;
+      }
     }
   }
 
@@ -55,7 +84,6 @@ export async function uploadBackup(
   fileName: string,
   onLog?: (msg: string) => void
 ) {
-  const apiUrl = config.API_URL ?? "https://sgp.cloud.appwrite.io/v1";
   const projectId = config.PROJECT_ID;
   const bucketId = config.BUCKET_ID;
   const apiKey = config.API_BACKUP_KEY; // Server key
@@ -65,18 +93,17 @@ export async function uploadBackup(
     throw new Error("Missing Appwrite config");
   }
 
-  const client = new Client()
-    .setEndpoint(apiUrl)
-    .setProject(projectId)
-    .setKey(apiKey);
-
-  const storage = new Storage(client);
+  const storage = createStorageClient(config);
 
   const nodeFile = InputFile.fromPath(filePath, fileName);
   
   if (onLog) onLog(`🚀 Starting Appwrite upload for: ${fileName}`);
   
-  const uploaded = await storage.createFile(bucketId, ID.unique(), nodeFile);
+  const uploaded = await storage.createFile({
+    bucketId,
+    fileId: ID.unique(),
+    file: nodeFile,
+  });
   
   if (onLog) onLog(`✅ Backup uploaded to Appwrite: ${uploaded.$id}`);
   return uploaded;
@@ -86,33 +113,154 @@ export async function downloadBackup(
   config: Record<string, string>,
   fileId: string,
   destinationPath: string,
-  onLog?: (msg: string) => void
+  onLog?: (msg: string) => void,
+  onProgress?: (progress: DownloadProgress) => void
 ) {
-  const apiUrl = config.API_URL ?? "https://sgp.cloud.appwrite.io/v1";
+  const apiUrl = normalizeAppwriteEndpoint(config.API_URL);
   const projectId = config.PROJECT_ID;
   const bucketId = config.BUCKET_ID;
   const apiKey = config.API_BACKUP_KEY; // Server key
 
   if (!projectId || !bucketId || !apiKey) {
+    if (onLog) onLog("Missing Appwrite configuration. Download skipped.");
     throw new Error("Missing Appwrite config");
   }
 
-  const client = new Client()
-    .setEndpoint(apiUrl)
-    .setProject(projectId)
-    .setKey(apiKey);
+  const encodedBucketId = encodeURIComponent(bucketId);
+  const encodedFileId = encodeURIComponent(fileId);
+  const downloadUrl = `${apiUrl}/storage/buckets/${encodedBucketId}/files/${encodedFileId}/download`;
 
-  const storage = new Storage(client);
+  if (onLog) onLog(`Downloading file ${fileId} from Appwrite (REST download endpoint)...`);
+  onProgress?.({ percent: 0, downloadedBytes: 0 });
 
-  if (onLog) onLog(`Downloading file ${fileId} from Appwrite...`);
+  const abortController = new AbortController();
+  const timeoutMs = 10 * 60 * 1000;
+  const timeout = setTimeout(() => abortController.abort(), timeoutMs);
 
-  const result = await storage.getFileDownload({
-    bucketId: bucketId,
-    fileId: fileId,
+  let response: Response;
+  try {
+    response = await fetch(downloadUrl, {
+      method: "GET",
+      headers: {
+        "X-Appwrite-Project": projectId,
+        "X-Appwrite-Key": apiKey,
+        "X-Appwrite-Response-Format": "1.8.0",
+      },
+      signal: abortController.signal,
+    });
+  } catch (error) {
+    if (abortController.signal.aborted) {
+      throw new Error(`Appwrite download timed out after ${Math.floor(timeoutMs / 1000)} seconds.`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  if (!response.ok || !response.body) {
+    const bodyText = await response.text().catch(() => "");
+    throw new Error(
+      `Appwrite download failed (${response.status} ${response.statusText}): ${bodyText || "No response body"}`
+    );
+  }
+
+  const contentLengthHeader = response.headers.get("content-length");
+  const expectedBytes = contentLengthHeader ? Number(contentLengthHeader) : NaN;
+  const totalBytes = Number.isFinite(expectedBytes) && expectedBytes > 0 ? expectedBytes : undefined;
+
+  const sink = Bun.file(destinationPath).writer();
+  sink.start();
+
+  const startedAt = Date.now();
+  let downloadedBytes = 0;
+  let nextProgressAt = 10;
+  let lastProgress = 0;
+  let lastEmitAt = 0;
+
+  try {
+    const reader = response.body.getReader();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      if (value && value.byteLength > 0) {
+        sink.write(value);
+        downloadedBytes += value.byteLength;
+
+        if (Number.isFinite(expectedBytes) && expectedBytes > 0) {
+          const progress = Math.floor((downloadedBytes / expectedBytes) * 100);
+          const clampedProgress = Math.min(99, Math.max(0, progress));
+
+          const now = Date.now();
+          const elapsedSeconds = Math.max((now - startedAt) / 1000, 0.001);
+          const bytesPerSecond = downloadedBytes / elapsedSeconds;
+          const etaSeconds = bytesPerSecond > 0 ? Math.max(0, (expectedBytes - downloadedBytes) / bytesPerSecond) : undefined;
+
+          if (clampedProgress !== lastProgress || now - lastEmitAt >= 300) {
+            onProgress?.({
+              percent: clampedProgress,
+              downloadedBytes,
+              totalBytes,
+              bytesPerSecond,
+              etaSeconds,
+            });
+            lastProgress = clampedProgress;
+            lastEmitAt = now;
+          }
+
+          if (progress >= nextProgressAt && onLog) {
+            onLog(
+              `Download progress: ${progress}% (${formatBytes(downloadedBytes)} / ${formatBytes(expectedBytes)})`
+            );
+            nextProgressAt += 10;
+          }
+        }
+      }
+    }
+
+    await sink.end();
+  } catch (error) {
+    try {
+      await sink.end(error instanceof Error ? error : undefined);
+    } catch {
+      // ignore sink close errors; original error will be thrown
+    }
+    try {
+      await Bun.file(destinationPath).delete();
+    } catch {
+      // ignore cleanup errors
+    }
+    throw error;
+  }
+
+  if (Number.isFinite(expectedBytes) && expectedBytes > 0 && downloadedBytes !== expectedBytes) {
+    try {
+      await Bun.file(destinationPath).delete();
+    } catch {
+      // ignore cleanup errors
+    }
+    throw new Error(
+      `Downloaded file size mismatch: got ${formatBytes(downloadedBytes)}, expected ${formatBytes(expectedBytes)}.`
+    );
+  }
+
+  if (onLog) {
+    const suffix = Number.isFinite(expectedBytes) && expectedBytes > 0
+      ? ` (expected ${formatBytes(expectedBytes)})`
+      : "";
+    onLog(`✅ File downloaded successfully to ${destinationPath} (${formatBytes(downloadedBytes)})${suffix}`);
+  }
+
+  const elapsedSeconds = Math.max((Date.now() - startedAt) / 1000, 0.001);
+  const bytesPerSecond = downloadedBytes / elapsedSeconds;
+  onProgress?.({
+    percent: 100,
+    downloadedBytes,
+    totalBytes,
+    bytesPerSecond,
+    etaSeconds: 0,
   });
 
-  const savedFile = await Bun.write(destinationPath, result);
-  
-  if (onLog) onLog(`✅ File downloaded successfully to ${destinationPath}`);
-  return savedFile;
+  return downloadedBytes;
 }
