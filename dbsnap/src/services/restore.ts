@@ -5,8 +5,12 @@ export async function restoreSelected(
   localBackupPath: string,
   onLog?: (msg: string) => void
 ) {
-  const container = config.DOCKER_CONTAINER || "Oasis_2025-postgres";
+  const container = (config.DOCKER_CONTAINER ?? "").trim();
   const password = config.SCRIPT_PASSWORD;
+
+  if (!container) {
+    throw new Error("DOCKER_CONTAINER is not set in config. Set it in --config or .env before running restore.");
+  }
 
   if (onLog) onLog(`Restoring file: ${localBackupPath} into container ${container}`);
 

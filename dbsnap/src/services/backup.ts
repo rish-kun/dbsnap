@@ -7,11 +7,15 @@ export async function takeBackup(
   dbname: string = "postgres",
   onLog?: (msg: string) => void
 ) {
-  const container = config.DOCKER_CONTAINER || config.DB_HOST === "db" ? "postgres" : "Oasis_2025-postgres";
   const password = config.SCRIPT_PASSWORD;
   const dbHost = config.DB_HOST || "localhost";
   const dbPort = config.DB_PORT || "5432";
   const isRemote = dbHost !== "localhost" && dbHost !== "127.0.0.1";
+  const container = (config.DOCKER_CONTAINER ?? "").trim();
+
+  if (!isRemote && !container) {
+    throw new Error("DOCKER_CONTAINER is not set in config. Set it in --config or .env before running backup.");
+  }
   
   const date = new Date();
   const timestamp = date.toISOString().replace(/[:.]/g, "-");

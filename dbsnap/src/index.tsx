@@ -19,7 +19,7 @@ async function runHeadlessBackup() {
   
   const runConfig = {
     ...config,
-    DOCKER_CONTAINER: containerArg || config.DOCKER_CONTAINER || "Oasis_2025-postgres",
+    DOCKER_CONTAINER: containerArg || config.DOCKER_CONTAINER || "",
     DB_HOST: hostArg || "localhost",
     DB_PORT: portArg || "5432",
   };
@@ -55,7 +55,12 @@ async function runHeadlessRestore(fileId?: string) {
         process.exit(1);
       }
       const sorted = files.sort((a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime());
-      targetId = sorted[0].$id;
+      const latest = sorted[0];
+      if (!latest) {
+        console.error("No backups found in Appwrite.");
+        process.exit(1);
+      }
+      targetId = latest.$id;
     }
 
     console.log(`Restoring backup ID: ${targetId}`);
