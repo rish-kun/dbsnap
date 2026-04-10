@@ -1,5 +1,7 @@
-import { Client, Query, Storage, ID } from "node-appwrite";
+import { Client, Query, Storage, ID, type Models } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
+import { mkdir, rename, rm, stat } from "node:fs/promises";
+import path from "node:path";
 
 function normalizeAppwriteEndpoint(apiUrl?: string): string {
   const base = (apiUrl ?? "https://sgp.cloud.appwrite.io/v1").trim().replace(/\/+$/, "");
@@ -31,7 +33,25 @@ export type DownloadProgress = {
   etaSeconds?: number;
 };
 
-export async function getFilesList(config: Record<string, string>, onLog?: (msg: string) => void) {
+export type BackupFile = Models.File;
+
+export function sortBackupsNewestFirst<T extends Pick<BackupFile, "$createdAt">>(files: T[]): T[] {
+  return [...files].sort((a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime());
+}
+
+export function getLatestBackup<T extends Pick<BackupFile, "$createdAt">>(files: T[]): T {
+  const latest = sortBackupsNewestFirst(files)[0];
+  if (!latest) {
+    throw new Error("No backups found in Appwrite.");
+  }
+
+  return latest;
+}
+
+export async function getFilesList(
+  config: Record<string, string>,
+  onLog?: (msg: string) => void
+): Promise<BackupFile[]> {
   const projectId = config.PROJECT_ID;
   const bucketId = config.BUCKET_ID;
   const apiKey = config.API_BACKUP_KEY; // Server key
@@ -50,7 +70,7 @@ export async function getFilesList(config: Record<string, string>, onLog?: (msg:
   if (onLog) onLog("Fetching list of backups from Appwrite...");
 
   while (hasMore) {
-    const queries = [Query.limit(limit)];
+    const queries = [Query.orderDesc("$createdAt"), Query.limit(limit)];
     if (lastFileId) {
       queries.push(Query.cursorAfter(lastFileId));
     }
@@ -75,7 +95,7 @@ export async function getFilesList(config: Record<string, string>, onLog?: (msg:
   }
 
   if (onLog) onLog(`Found ${allFiles.length} backups.`);
-  return allFiles;
+  return sortBackupsNewestFirst(allFiles);
 }
 
 export async function uploadBackup(
@@ -167,8 +187,15 @@ export async function downloadBackup(
   const contentLengthHeader = response.headers.get("content-length");
   const expectedBytes = contentLengthHeader ? Number(contentLengthHeader) : NaN;
   const totalBytes = Number.isFinite(expectedBytes) && expectedBytes > 0 ? expectedBytes : undefined;
+  const destinationDir = path.dirname(destinationPath);
+  const tempPath = `${destinationPath}.${crypto.randomUUID()}.part`;
 
-  const sink = Bun.file(destinationPath).writer();
+  await mkdir(destinationDir, { recursive: true });
+  await rm(tempPath, { force: true }).catch(() => {
+    // ignore cleanup errors for a fresh temp path
+  });
+
+  const sink = Bun.file(tempPath).writer();
   sink.start();
 
   const startedAt = Date.now();
@@ -227,7 +254,7 @@ export async function downloadBackup(
       // ignore sink close errors; original error will be thrown
     }
     try {
-      await Bun.file(destinationPath).delete();
+      await rm(tempPath, { force: true });
     } catch {
       // ignore cleanup errors
     }
@@ -236,7 +263,7 @@ export async function downloadBackup(
 
   if (Number.isFinite(expectedBytes) && expectedBytes > 0 && downloadedBytes !== expectedBytes) {
     try {
-      await Bun.file(destinationPath).delete();
+      await rm(tempPath, { force: true });
     } catch {
       // ignore cleanup errors
     }
@@ -244,6 +271,20 @@ export async function downloadBackup(
       `Downloaded file size mismatch: got ${formatBytes(downloadedBytes)}, expected ${formatBytes(expectedBytes)}.`
     );
   }
+
+  const downloadedStat = await stat(tempPath);
+  if (downloadedStat.size !== downloadedBytes) {
+    try {
+      await rm(tempPath, { force: true });
+    } catch {
+      // ignore cleanup errors
+    }
+    throw new Error(
+      `Downloaded file size mismatch on disk: got ${formatBytes(downloadedStat.size)}, expected ${formatBytes(downloadedBytes)}.`
+    );
+  }
+
+  await rename(tempPath, destinationPath);
 
   if (onLog) {
     const suffix = Number.isFinite(expectedBytes) && expectedBytes > 0

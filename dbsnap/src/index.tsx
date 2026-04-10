@@ -4,10 +4,11 @@ import React from "react";
 import { App } from "./app";
 import { loadConfig } from "./services/config";
 import { takeBackup } from "./services/backup";
-import { uploadBackup, getFilesList, downloadBackup } from "./services/storage";
+import { uploadBackup, getFilesList, downloadBackup, getLatestBackup } from "./services/storage";
 import { sendEmail } from "./services/email";
 import { restoreSelected } from "./services/restore";
 import { runConfigEditor } from "./services/config-editor";
+import { cleanupRestoreDownloadPath, createRestoreDownloadPath } from "./services/restore-file";
 
 async function runHeadlessBackup() {
   const config = await loadConfig();
@@ -50,23 +51,17 @@ async function runHeadlessRestore(fileId?: string) {
     if (!targetId) {
       console.log("No file ID provided, fetching latest backup...");
       const files = await getFilesList(config, console.log);
-      if (files.length === 0) {
-        console.error("No backups found in Appwrite.");
-        process.exit(1);
-      }
-      const sorted = files.sort((a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime());
-      const latest = sorted[0];
-      if (!latest) {
-        console.error("No backups found in Appwrite.");
-        process.exit(1);
-      }
-      targetId = latest.$id;
+      targetId = getLatestBackup(files).$id;
     }
 
     console.log(`Restoring backup ID: ${targetId}`);
-    const localPath = "./backup.dump";
-    await downloadBackup(config, targetId, localPath, console.log);
-    await restoreSelected(config, localPath, console.log);
+    const localPath = await createRestoreDownloadPath(targetId);
+    try {
+      await downloadBackup(config, targetId, localPath, console.log);
+      await restoreSelected(config, localPath, console.log);
+    } finally {
+      await cleanupRestoreDownloadPath(localPath);
+    }
     console.log("✅ Restore complete!");
   } catch (err) {
     console.error("❌ Headless Restore Error:", err);

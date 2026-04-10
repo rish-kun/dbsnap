@@ -5,22 +5,25 @@ type RestoreProgressHooks = {
 };
 
 function asSqlLiteral(value: string): string {
-  return `'${value.replaceAll("'", "''")}'`;
+  const sanitized = value.replace(/\0/g, "");
+  return `'${sanitized.replaceAll("'", "''")}'`;
 }
 
 function asSqlIdentifier(value: string): string {
-  return `"${value.replaceAll('"', '""')}"`;
+  const sanitized = value.replace(/\0/g, "");
+  return `"${sanitized.replaceAll('"', '""')}"`;
 }
 
 export async function restoreSelected(
   config: Record<string, string>,
   localBackupPath: string,
   onLog?: (msg: string) => void,
-  hooks?: RestoreProgressHooks
+  hooks?: RestoreProgressHooks,
+  overrideDbName?: string
 ) {
   const container = (config.DOCKER_CONTAINER ?? "").trim();
   const password = config.SCRIPT_PASSWORD;
-  const dbName = (config.DB_NAME ?? "postgres").trim() || "postgres";
+  const dbName = overrideDbName ?? ((config.DB_NAME ?? "postgres").trim() || "postgres");
   const dbUser = (config.DB_USER ?? "postgres").trim() || "postgres";
   const maintenanceDb = dbName === "postgres" ? "template1" : "postgres";
   const pgOptions = "-c lock_timeout=10s -c statement_timeout=30min";

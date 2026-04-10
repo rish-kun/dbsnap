@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useKeyboard, useTerminalDimensions } from "@opentui/react";
-import { getFilesList, downloadBackup, type DownloadProgress } from "../services/storage";
+import { getFilesList, downloadBackup, getLatestBackup, sortBackupsNewestFirst, type DownloadProgress } from "../services/storage";
 import { restoreSelected } from "../services/restore";
+import { getDatabases } from "../services/docker";
 import { LogViewer } from "../components/LogViewer";
 import { ProgressBar } from "../components/ProgressBar";
+import { cleanupRestoreDownloadPath, createRestoreDownloadPath } from "../services/restore-file";
 
 function formatBytes(bytes: number): string {
   if (bytes <= 0) return "0 B";
@@ -36,6 +38,11 @@ export function RestoreView({ config, isFocused }: { config: Record<string, stri
   const [restoreProgress, setRestoreProgress] = useState(0);
   const [phase, setPhase] = useState<"idle" | "download" | "restore">("idle");
   const [logs, setLogs] = useState<string[]>([]);
+  const [selectedDb, setSelectedDb] = useState(config.DB_NAME || "postgres");
+  const [dbSelectorMode, setDbSelectorMode] = useState(false);
+  const [availableDbs, setAvailableDbs] = useState<string[]>([]);
+  const [dbSelectorIndex, setDbSelectorIndex] = useState(0);
+  const [dbFetchLoading, setDbFetchLoading] = useState(false);
   const { height, width } = useTerminalDimensions();
 
   const addLog = (msg: string) => setLogs(prev => [...prev, msg]);
@@ -50,8 +57,7 @@ export function RestoreView({ config, isFocused }: { config: Record<string, stri
     setLoading(true);
     try {
       const fetched = await getFilesList(config, addLog);
-      const sorted = fetched.sort((a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime());
-      setFiles(sorted);
+      setFiles(sortBackupsNewestFirst(fetched));
     } catch (err: any) {
       addLog(`Failed to load files: ${err.message}`);
     } finally {
@@ -59,9 +65,32 @@ export function RestoreView({ config, isFocused }: { config: Record<string, stri
     }
   };
 
+  const fetchDatabases = async () => {
+    const container = config.DOCKER_CONTAINER;
+    if (!container) {
+      addLog("No container configured");
+      return;
+    }
+    setDbFetchLoading(true);
+    addLog("Fetching databases...");
+    try {
+      const dbUser = config.DB_USER || "postgres";
+      const dbs = await getDatabases(container, dbUser);
+      setAvailableDbs(dbs);
+      setDbSelectorIndex(dbs.indexOf(selectedDb) >= 0 ? dbs.indexOf(selectedDb) : 0);
+      addLog(`Found ${dbs.length} databases`);
+    } catch (err: any) {
+      addLog(`Failed to fetch databases: ${err.message}`);
+      setAvailableDbs([]);
+    } finally {
+      setDbFetchLoading(false);
+    }
+  };
+
   const handleRestore = async () => {
     if (files.length === 0 || running) return;
-    const file = files[selectedIndex];
+    const selectedFile = files[selectedIndex];
+    const file = selectedFile ?? getLatestBackup(files);
     setRunning(true);
     setPhase("download");
     setDownloadProgress(0);
@@ -70,20 +99,25 @@ export function RestoreView({ config, isFocused }: { config: Record<string, stri
     setLogs([]);
     try {
       addLog(`Downloading backup: ${file.name}...`);
-      const localPath = "./backup.dump";
-      await downloadBackup(config, file.$id, localPath, addLog, (progress) => {
-        setDownloadMetrics(progress);
-        setDownloadProgress(progress.percent);
-      });
-      
-      addLog(`Starting restore process...`);
-      setPhase("restore");
-      setRestoreProgress(0);
-      await restoreSelected(config, localPath, addLog, {
-        onStageProgress: (progress) => {
-          setRestoreProgress(progress);
-        },
-      });
+      const localPath = await createRestoreDownloadPath(file.$id);
+      try {
+        await downloadBackup(config, file.$id, localPath, addLog, (progress) => {
+          setDownloadMetrics(progress);
+          setDownloadProgress(progress.percent);
+        });
+        
+        addLog(`Starting restore process...`);
+        setPhase("restore");
+        setRestoreProgress(0);
+        await restoreSelected(config, localPath, addLog, {
+          onStageProgress: (progress) => {
+            setRestoreProgress(progress);
+          },
+        }, selectedDb);
+      } finally {
+        await cleanupRestoreDownloadPath(localPath);
+        addLog(`Removed temporary restore file: ${localPath}`);
+      }
       
       addLog(`✅ Complete! Database restored.`);
     } catch (err: any) {
@@ -95,7 +129,29 @@ export function RestoreView({ config, isFocused }: { config: Record<string, stri
   };
 
   useKeyboard((key) => {
-    if (!isFocused || running || files.length === 0) return;
+    if (!isFocused || running) return;
+    
+    if (dbSelectorMode) {
+      if (key.name === "up") {
+        setDbSelectorIndex(prev => Math.max(0, prev - 1));
+      } else if (key.name === "down") {
+        setDbSelectorIndex(prev => Math.min(availableDbs.length - 1, prev + 1));
+      } else if (key.name === "return" && availableDbs.length > 0) {
+        const db = availableDbs[dbSelectorIndex];
+        if (db) {
+          setSelectedDb(db);
+          setDbSelectorMode(false);
+          addLog(`Selected database: ${db}`);
+        }
+      } else if (key.name === "escape") {
+        setDbSelectorMode(false);
+      } else if (key.name === "r") {
+        fetchDatabases();
+      }
+      return;
+    }
+    
+    if (files.length === 0) return;
     if (key.name === "up") {
       setSelectedIndex(prev => Math.max(0, prev - 1));
     } else if (key.name === "down") {
@@ -104,6 +160,11 @@ export function RestoreView({ config, isFocused }: { config: Record<string, stri
       handleRestore();
     } else if (key.name === "r") {
       loadFiles();
+    } else if (key.name === "d") {
+      setDbSelectorMode(true);
+      if (availableDbs.length === 0) {
+        fetchDatabases();
+      }
     }
   });
 
@@ -117,6 +178,31 @@ export function RestoreView({ config, isFocused }: { config: Record<string, stri
   return (
     <box style={{ flexDirection: "column", gap: 1, height: "100%", overflow: "hidden" }}>
       <text fg="#00A5FF" bold>🔄 Database Restore</text>
+      
+      {!loading && files.length > 0 && (
+        <box style={{ flexDirection: "row", marginBottom: 1 }}>
+          <text fg="#888">Target Database: </text>
+          <text fg="#0FF">{selectedDb}</text>
+          <text fg="#666"> [D] Change [R] Refresh</text>
+        </box>
+      )}
+
+      {dbSelectorMode && (
+        <box style={{ flexDirection: "column", marginLeft: 18, padding: 1, border: true, borderColor: "#0FF" }}>
+          {dbFetchLoading ? (
+            <text fg="#FFA500">Fetching databases...</text>
+          ) : availableDbs.length === 0 ? (
+            <text fg="#F55">No databases found or container not accessible</text>
+          ) : (
+            availableDbs.map((db, idx) => (
+              <text key={db} fg={idx === dbSelectorIndex ? "#0FF" : "#666"}>
+                {idx === dbSelectorIndex ? "▶ " : "  "}{db}
+              </text>
+            ))
+          )}
+          <text fg="#444" style={{ marginTop: 1 }}>[↑/↓] Select [Enter] Confirm [Esc] Cancel [R] Retry</text>
+        </box>
+      )}
       
       {loading ? (
         <text fg="#FFA500">Loading backups from Appwrite...</text>

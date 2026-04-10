@@ -4,7 +4,7 @@
   "scripts": {
     "start": "bun run src/index.tsx",
     "test": "bun test",
-    "build": "echo 'Run via ./dbsnap (wrapper script) instead of compiling due to node-appwrite bun compiler bugs.'"
+    "build": "echo 'The CLI entrypoint is ./dbsnap, which runs src/index.tsx through Bun. No separate compiled binary is generated.'"
   },
   "type": "module",
   "private": true,

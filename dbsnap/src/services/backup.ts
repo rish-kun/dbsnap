@@ -4,7 +4,7 @@ import path from "path";
 
 export async function takeBackup(
   config: Record<string, string>,
-  dbname: string = "postgres",
+  dbname: string,
   onLog?: (msg: string) => void
 ) {
   const password = config.SCRIPT_PASSWORD;
@@ -67,7 +67,7 @@ export async function takeBackup(
     "-Fc",
     "-f",
     tmpPath,
-    "postgres",
+    dbname,
   ];
 
   await runSudo(password, dumpCmd, onLog);

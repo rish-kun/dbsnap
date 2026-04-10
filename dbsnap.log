@@ -2,3 +2,244 @@
 /Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
 /Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
 /Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+/Users/rishit/Coding/dbsnap/dbsnap/dbsnap: line 3: bun: command not found
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:31:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:87:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:32:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:82:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:32:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:82:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:32:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:82:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:32:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:82:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:32:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:82:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:32:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:82:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:32:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:82:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:32:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:82:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:32:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:82:11)
+

@@ -11,4 +11,6 @@ else
     exit 1
 fi
 
+# This wrapper is the CLI entrypoint. It executes the source CLI directly,
+# so fixes in src/index.tsx apply to `./dbsnap` without a separate build step.
 exec "$BUN_BIN" run "$DIR/src/index.tsx" "$@"

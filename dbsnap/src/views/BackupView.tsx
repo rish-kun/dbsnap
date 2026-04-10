@@ -18,7 +18,8 @@ export function BackupView({ config, isFocused }: { config: Record<string, strin
     setLogs([]);
     try {
       addLog("Initializing backup...");
-      const localPath = await takeBackup(config, "postgres", addLog);
+      const dbName = config.DB_NAME || "postgres";
+      const localPath = await takeBackup(config, dbName, addLog);
       const fileName = localPath.split("/").pop() ?? "backup.dump";
       
       addLog(`Preparing upload for ${fileName}...`);

@@ -11,6 +11,7 @@ const CONFIG_FIELDS = [
     { key: "EMAIL_FROM", label: "Email From" },
     { key: "EMAIL_TO", label: "Email To" },
     { key: "DOCKER_CONTAINER", label: "Container" },
+    { key: "DB_NAME", label: "Database" },
     { key: "SCRIPT_PASSWORD", label: "Sudo Password", secret: true },
 ];
 

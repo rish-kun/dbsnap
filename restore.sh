@@ -1,5 +1,5 @@
 #!/bin/bash
-# Restore script updated to use the compiled DBSnap CLI
+# Restore script that invokes the DBSnap CLI wrapper
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
