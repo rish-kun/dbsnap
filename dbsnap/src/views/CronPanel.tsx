@@ -222,7 +222,7 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
       setContainerSelectorIndex(prev => (prev + 1) % availableContainers.length);
     } else if (keyName === "up") {
       setContainerSelectorIndex(prev => (prev - 1 + availableContainers.length) % availableContainers.length);
-    } else if (keyName === "enter") {
+    } else if (keyName === "return") {
       setFormData(prev => ({ ...prev, dockerContainer: selectedContainer }));
       setContainerSelectorMode(false);
     } else if (keyName === "escape") {
@@ -238,7 +238,7 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
     if (viewMode === "list") {
       if (key.name === "down" || key.name === "tab" || key.name === "up") {
         handleListNavigation(key.name);
-      } else if (key.name === "enter") {
+      } else if (key.name === "return") {
         if (cronJobs.length > 0 && selectedJobIndex >= 0) {
           handleEdit(selectedJobIndex);
         } else {
@@ -255,7 +255,7 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
       if (containerSelectorMode) {
         if (key.name === "down" || key.name === "tab" || key.name === "up") {
           handleContainerSelector(key.name);
-        } else if (key.name === "enter") {
+        } else if (key.name === "return") {
           const selectedContainer = availableContainers[containerSelectorIndex];
           if (selectedContainer) {
             setFormData(prev => ({ ...prev, dockerContainer: selectedContainer }));
@@ -266,7 +266,7 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
         }
       } else if (key.name === "down" || key.name === "tab" || key.name === "up" || key.name === "left" || key.name === "right") {
         handleFormNavigation(key.name);
-      } else if (key.name === "enter" && focusedField === "container" && availableContainers.length > 0) {
+      } else if (key.name === "return" && focusedField === "container" && availableContainers.length > 0) {
         const idx = availableContainers.indexOf(formData.dockerContainer);
         setContainerSelectorIndex(idx >= 0 ? idx : 0);
         setContainerSelectorMode(true);

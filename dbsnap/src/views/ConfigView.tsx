@@ -100,7 +100,7 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: ConfigViewProp
           setDbSelectorIndex(prev => (prev + 1) % availableDbs.length);
         } else if (key.name === "up") {
           setDbSelectorIndex(prev => (prev - 1 + availableDbs.length) % availableDbs.length);
-        } else if (key.name === "enter") {
+        } else if (key.name === "return") {
           const selectedDb = availableDbs[dbSelectorIndex];
           if (selectedDb) {
             handleInput("DB_NAME", selectedDb);
@@ -126,7 +126,7 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: ConfigViewProp
       } else if (key.ctrl && key.name === "s") {
         handleSave();
       } else if (focusedField === "__cron__") {
-        if (key.name === "enter" || key.name === "space") {
+        if (key.name === "return" || key.name === "space") {
           setDbSelectorMode(false);
           setAvailableDbs([]);
           setActiveSection("cron");
@@ -134,7 +134,7 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: ConfigViewProp
       } else if (focusedField === "DB_NAME") {
         if (key.name === "r" && !key.ctrl) {
           fetchDatabases();
-        } else if (key.name === "space" || key.name === "enter") {
+        } else if (key.name === "space" || key.name === "return") {
           if (availableDbs.length > 0) {
             const idx = availableDbs.findIndex(db => db === formData.DB_NAME);
             setDbSelectorIndex(idx >= 0 ? idx : 0);
