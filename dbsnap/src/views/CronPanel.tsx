@@ -233,6 +233,8 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
   useKeyboard((key) => {
     if (!isFocused) return;
 
+    if (key.ctrl && key.name === "j") return;
+
     if (viewMode === "list") {
       if (key.name === "down" || key.name === "tab" || key.name === "up") {
         handleListNavigation(key.name);

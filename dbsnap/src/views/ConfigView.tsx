@@ -40,6 +40,13 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: ConfigViewProp
     setDbSelectorMode(false);
   }, [formData.DOCKER_CONTAINER]);
 
+  useEffect(() => {
+    if (activeSection === "cron") {
+      setDbSelectorMode(false);
+      setAvailableDbs([]);
+    }
+  }, [activeSection]);
+
   const handleInput = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -79,6 +86,8 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: ConfigViewProp
     if (!isFocused) return;
     
     if (key.ctrl && key.name === "j") {
+      setDbSelectorMode(false);
+      setAvailableDbs([]);
       setActiveSection(activeSection === "config" ? "cron" : "config");
       return;
     }
@@ -140,7 +149,7 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: ConfigViewProp
           <text fg="#666">[Ctrl+J] Back to Config</text>
         </box>
 
-        <CronPanel config={formData} isFocused={isFocused} logs={logs} setLogs={setLogs} />
+        <CronPanel config={formData} isFocused={isFocused && activeSection === "cron"} logs={logs} setLogs={setLogs} />
       </box>
     );
   }
