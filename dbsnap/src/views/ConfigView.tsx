@@ -31,6 +31,8 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: ConfigViewProp
     { key: "SCRIPT_PASSWORD", label: "Sudo Password", secret: true },
   ];
 
+  const navItems = [{ key: "__cron__", label: "Cron Jobs" }];
+
   const [dbSelectorMode, setDbSelectorMode] = useState(false);
   const [availableDbs, setAvailableDbs] = useState<string[]>([]);
   const [dbSelectorIndex, setDbSelectorIndex] = useState(0);
@@ -110,18 +112,25 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: ConfigViewProp
         return;
       }
       
-      const currentIndex = fields.findIndex(f => f.key === focusedField);
+      const allItems = [...fields, ...navItems];
+      const currentIndex = allItems.findIndex(f => f.key === focusedField);
       
       if (key.name === "down" || key.name === "tab") {
-        const nextIndex = (currentIndex + 1) % fields.length;
-        const nextField = fields[nextIndex];
-        if (nextField) setFocusedField(nextField.key);
+        const nextIndex = (currentIndex + 1) % allItems.length;
+        const nextItem = allItems[nextIndex];
+        if (nextItem) setFocusedField(nextItem.key);
       } else if (key.name === "up") {
-        const prevIndex = (currentIndex - 1 + fields.length) % fields.length;
-        const prevField = fields[prevIndex];
-        if (prevField) setFocusedField(prevField.key);
+        const prevIndex = (currentIndex - 1 + allItems.length) % allItems.length;
+        const prevItem = allItems[prevIndex];
+        if (prevItem) setFocusedField(prevItem.key);
       } else if (key.ctrl && key.name === "s") {
         handleSave();
+      } else if (focusedField === "__cron__") {
+        if (key.name === "enter" || key.name === "space") {
+          setDbSelectorMode(false);
+          setAvailableDbs([]);
+          setActiveSection("cron");
+        }
       } else if (focusedField === "DB_NAME") {
         if (key.name === "r" && !key.ctrl) {
           fetchDatabases();
@@ -163,7 +172,7 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: ConfigViewProp
         <text fg="#444">  </text>
         <text fg="#666">[Ctrl+S] Save</text>
         <text fg="#444">  </text>
-        <text fg="#666">[Ctrl+J] Cron Jobs</text>
+        <text fg="#666">[Ctrl+J] / [Enter] on Cron Jobs</text>
       </box>
 
       <box style={{ 
@@ -206,6 +215,17 @@ export function ConfigView({ config, isFocused, onConfigUpdate }: ConfigViewProp
             )}
           </box>
         ))}
+        <box style={{ flexDirection: "row", marginTop: 1, paddingTop: 1, borderTop: true, borderColor: "#333" }}>
+          <text 
+            fg={isFocused && focusedField === "__cron__" ? "#0F0" : "#666"} 
+            style={{ width: 16 }}
+          >
+            {">>"} Cron Jobs
+          </text>
+          <text fg={isFocused && focusedField === "__cron__" ? "#AAA" : "#444"}>
+            {isFocused && focusedField === "__cron__" ? "[Enter] Open" : ""}
+          </text>
+        </box>
       </box>
       
       <LogViewer logs={logs} title="Config Logs" />
