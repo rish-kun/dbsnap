@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useKeyboard } from "@opentui/react";
 import { setupCronJob, listCronJobs, removeCronJob } from "../services/cron";
-import { getDockerContainers } from "../services/docker";
+import { getDockerContainers, getDatabases } from "../services/docker";
 import { LogViewer } from "../components/LogViewer";
 
 export interface CronJobConfig {
@@ -11,6 +11,7 @@ export interface CronJobConfig {
   dbHostType: "local" | "remote";
   port: string;
   dockerContainer: string;
+  dbName: string;
 }
 
 interface CronPanelProps {
@@ -28,7 +29,7 @@ const frequencyOptions = [
   { value: "custom", label: "Custom", cron: "" },
 ];
 
-type FormField = "frequency" | "customCron" | "dbHost" | "port" | "container";
+type FormField = "frequency" | "customCron" | "dbHost" | "port" | "container" | "database";
 
 export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) {
   const [cronJobs, setCronJobs] = useState<CronJobConfig[]>([]);
@@ -41,11 +42,16 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
     dbHostType: "local",
     port: "5432",
     dockerContainer: "",
+    dbName: "postgres",
   });
   const [focusedField, setFocusedField] = useState<FormField>("frequency");
   const [containerSelectorMode, setContainerSelectorMode] = useState(false);
   const [containerSelectorIndex, setContainerSelectorIndex] = useState(0);
   const [availableContainers, setAvailableContainers] = useState<string[]>([]);
+  const [dbSelectorMode, setDbSelectorMode] = useState(false);
+  const [dbSelectorIndex, setDbSelectorIndex] = useState(0);
+  const [availableDbs, setAvailableDbs] = useState<string[]>([]);
+  const [dbFetchLoading, setDbFetchLoading] = useState(false);
 
   useEffect(() => {
     if (viewMode === "add" || viewMode === "edit") {
@@ -62,7 +68,34 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
     }
   }, [viewMode]);
 
-  const formFields: FormField[] = ["frequency", "customCron", "dbHost", "port", "container"];
+  useEffect(() => {
+    setAvailableDbs([]);
+    setDbSelectorMode(false);
+  }, [formData.dockerContainer]);
+
+  const fetchDatabases = async () => {
+    const container = formData.dockerContainer;
+    if (!container) {
+      addLog("❌ Please set container first");
+      return;
+    }
+    setDbFetchLoading(true);
+    addLog("Fetching databases...");
+    try {
+      const dbUser = config.DB_USER || "postgres";
+      const dbs = await getDatabases(container, dbUser);
+      setAvailableDbs(dbs);
+      setDbSelectorIndex(dbs.indexOf(formData.dbName) >= 0 ? dbs.indexOf(formData.dbName) : 0);
+      addLog(`Found ${dbs.length} databases`);
+    } catch (err: any) {
+      addLog(`Failed to fetch databases: ${err.message}`);
+      setAvailableDbs([]);
+    } finally {
+      setDbFetchLoading(false);
+    }
+  };
+
+  const formFields: FormField[] = ["frequency", "customCron", "dbHost", "port", "container", "database"];
 
   const addLog = (msg: string) => setLogs(prev => [...prev, msg]);
 
@@ -80,6 +113,7 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
       dbHostType: "local",
       port: "5432",
       dockerContainer: config.DOCKER_CONTAINER || "",
+      dbName: config.DB_NAME || "postgres",
     });
     setViewMode("add");
     setSelectedJobIndex(-1);
@@ -102,9 +136,9 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
       
       addLog(`Setting up cron job for container: ${containerName}...`);
       addLog(`Frequency: ${formData.frequencyType} (${cronExpr})`);
-      addLog(`Database: ${formData.dbHostType}:${formData.port}`);
+      addLog(`Database: ${formData.dbHostType}:${formData.port} - ${formData.dbName}`);
       
-      await setupCronJob(cronExpr, containerName, formData.dbHostType, formData.port, addLog);
+      await setupCronJob(cronExpr, containerName, formData.dbHostType, formData.port, formData.dbName, addLog);
       
       if (viewMode === "add") {
         setCronJobs(prev => [...prev, formData]);
@@ -172,6 +206,7 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
       if (nextField) {
         setFocusedField(nextField);
         setContainerSelectorMode(false);
+        setDbSelectorMode(false);
       }
     } else if (keyName === "up") {
       let prevIndex = (currentIndex - 1 + formFields.length) % formFields.length;
@@ -183,6 +218,7 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
       if (prevField) {
         setFocusedField(prevField);
         setContainerSelectorMode(false);
+        setDbSelectorMode(false);
       }
     } else if (keyName === "right") {
       if (focusedField === "frequency") {
@@ -196,6 +232,11 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
         const nextIdx = idx >= 0 ? (idx + 1) % availableContainers.length : 0;
         const nextContainer = availableContainers[nextIdx];
         if (nextContainer) setFormData(prev => ({ ...prev, dockerContainer: nextContainer }));
+      } else if (focusedField === "database" && availableDbs.length > 0) {
+        const idx = availableDbs.indexOf(formData.dbName);
+        const nextIdx = idx >= 0 ? (idx + 1) % availableDbs.length : 0;
+        const nextDb = availableDbs[nextIdx];
+        if (nextDb) setFormData(prev => ({ ...prev, dbName: nextDb }));
       }
     } else if (keyName === "left") {
       if (focusedField === "frequency") {
@@ -209,6 +250,11 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
         const prevIdx = idx > 0 ? idx - 1 : availableContainers.length - 1;
         const prevContainer = availableContainers[prevIdx];
         if (prevContainer) setFormData(prev => ({ ...prev, dockerContainer: prevContainer }));
+      } else if (focusedField === "database" && availableDbs.length > 0) {
+        const idx = availableDbs.indexOf(formData.dbName);
+        const prevIdx = idx > 0 ? idx - 1 : availableDbs.length - 1;
+        const prevDb = availableDbs[prevIdx];
+        if (prevDb) setFormData(prev => ({ ...prev, dbName: prevDb }));
       }
     }
   };
@@ -227,6 +273,25 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
       setContainerSelectorMode(false);
     } else if (keyName === "escape") {
       setContainerSelectorMode(false);
+    }
+  };
+
+  const handleDbSelector = (keyName: string) => {
+    if (availableDbs.length === 0) return;
+    const selectedDb = availableDbs[dbSelectorIndex];
+    if (!selectedDb) return;
+
+    if (keyName === "down" || keyName === "tab") {
+      setDbSelectorIndex(prev => (prev + 1) % availableDbs.length);
+    } else if (keyName === "up") {
+      setDbSelectorIndex(prev => (prev - 1 + availableDbs.length) % availableDbs.length);
+    } else if (keyName === "return") {
+      setFormData(prev => ({ ...prev, dbName: selectedDb }));
+      setDbSelectorMode(false);
+    } else if (keyName === "escape") {
+      setDbSelectorMode(false);
+    } else if (keyName === "r") {
+      fetchDatabases();
     }
   };
 
@@ -264,12 +329,37 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
         } else if (key.name === "escape") {
           setContainerSelectorMode(false);
         }
+      } else if (dbSelectorMode) {
+        if (key.name === "down" || key.name === "tab" || key.name === "up") {
+          handleDbSelector(key.name);
+        } else if (key.name === "return") {
+          const selectedDb = availableDbs[dbSelectorIndex];
+          if (selectedDb) {
+            setFormData(prev => ({ ...prev, dbName: selectedDb }));
+          }
+          setDbSelectorMode(false);
+        } else if (key.name === "escape") {
+          setDbSelectorMode(false);
+        } else if (key.name === "r") {
+          fetchDatabases();
+        }
       } else if (key.name === "down" || key.name === "tab" || key.name === "up" || key.name === "left" || key.name === "right") {
         handleFormNavigation(key.name);
       } else if (key.name === "return" && focusedField === "container" && availableContainers.length > 0) {
         const idx = availableContainers.indexOf(formData.dockerContainer);
         setContainerSelectorIndex(idx >= 0 ? idx : 0);
         setContainerSelectorMode(true);
+      } else if (focusedField === "database") {
+        if (key.name === "r") {
+          fetchDatabases();
+        } else if (key.name === "space" || key.name === "return") {
+          if (availableDbs.length > 0) {
+            setDbSelectorIndex(availableDbs.indexOf(formData.dbName) >= 0 ? availableDbs.indexOf(formData.dbName) : 0);
+            setDbSelectorMode(true);
+          } else {
+            fetchDatabases();
+          }
+        }
       } else if (key.ctrl && key.name === "s") {
         handleSave();
       } else if (key.ctrl && key.name === "escape") {
@@ -350,6 +440,41 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
           <text fg="#444" style={{ marginLeft: 18 }}>[Enter] Show containers | [Type] Custom</text>
         )}
 
+        <box style={{ flexDirection: "row" }}>
+          <text fg={focusedField === "database" ? "#0F0" : "#666"} style={{ width: 18 }}>Database:</text>
+          {dbSelectorMode ? (
+            <text fg="#FFF">{formData.dbName}</text>
+          ) : (
+            <input
+              value={formData.dbName}
+              onInput={(val: string) => setFormData(prev => ({ ...prev, dbName: val }))}
+              focused={focusedField === "database"}
+              placeholder="postgres"
+            />
+          )}
+        </box>
+
+        {dbSelectorMode && (
+          <box style={{ flexDirection: "column", marginLeft: 18, padding: 1, border: true, borderColor: "#0F0" }}>
+            {dbFetchLoading ? (
+              <text fg="#FFA500">Fetching databases...</text>
+            ) : availableDbs.length === 0 ? (
+              <text fg="#F55">No databases found or container not accessible</text>
+            ) : (
+              availableDbs.map((db, idx) => (
+                <text key={db} fg={idx === dbSelectorIndex ? "#0F0" : "#666"}>
+                  {idx === dbSelectorIndex ? "▶ " : "  "}{db}
+                </text>
+              ))
+            )}
+            <text fg="#444" style={{ marginTop: 1 }}>[↑/↓] Select [Enter] Confirm [Esc] Cancel [R] Retry</text>
+          </box>
+        )}
+
+        {!dbSelectorMode && (
+          <text fg="#444" style={{ marginLeft: 18 }}>[R] Refresh [Space/Enter] Select</text>
+        )}
+
         <box style={{ flexDirection: "row", marginTop: 1 }}>
           <text fg="#666">[↑/↓] Navigate</text>
           <text fg="#444">  </text>
@@ -396,7 +521,7 @@ export function CronPanel({ config, isFocused, logs, setLogs }: CronPanelProps) 
               <text fg="#444"> - </text>
               <text fg="#AAA">{job.frequencyType}</text>
               <text fg="#444"> - </text>
-              <text fg="#AAA">{job.dbHostType}:{job.port}</text>
+              <text fg="#AAA">{job.dbHostType}:{job.port} - {job.dbName}</text>
             </box>
           ))}
         </box>

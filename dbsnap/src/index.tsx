@@ -17,19 +17,22 @@ async function runHeadlessBackup() {
   const containerArg = args.find((_, i) => args[i - 1] === "--container");
   const hostArg = args.find((_, i) => args[i - 1] === "--host");
   const portArg = args.find((_, i) => args[i - 1] === "--port");
+  const dbnameArg = args.find(arg => arg.startsWith("--dbname="))?.split("=")[1] ||
+                    args.find((_, i) => args[i - 1] === "--dbname");
   
   const runConfig = {
     ...config,
     DOCKER_CONTAINER: containerArg || config.DOCKER_CONTAINER || "",
     DB_HOST: hostArg || "localhost",
     DB_PORT: portArg || "5432",
+    DB_NAME: dbnameArg || config.DB_NAME || "postgres",
   };
   
   console.log(`Starting headless backup for container: ${runConfig.DOCKER_CONTAINER}`);
-  console.log(`Host: ${runConfig.DB_HOST}, Port: ${runConfig.DB_PORT}`);
+  console.log(`Host: ${runConfig.DB_HOST}, Port: ${runConfig.DB_PORT}, Database: ${runConfig.DB_NAME}`);
   
   try {
-    const localPath = await takeBackup(runConfig, "postgres", console.log);
+    const localPath = await takeBackup(runConfig, runConfig.DB_NAME, console.log);
     const fileName = localPath.split("/").pop() ?? "backup.dump";
     const response = await uploadBackup(config, localPath, fileName, console.log);
     const fileUrl = `${config.API_URL}/storage/buckets/${response.bucketId}/files/${response.$id}/view`;

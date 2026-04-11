@@ -5,6 +5,7 @@ export interface CronJobResult {
   container: string;
   expression: string;
   command: string;
+  dbName?: string;
 }
 
 export async function setupCronJob(
@@ -12,6 +13,7 @@ export async function setupCronJob(
   dockerContainer: string,
   dbHostType: "local" | "remote",
   port: string,
+  dbName: string,
   onLog?: (msg: string) => void
 ) {
   const rootDir = path.resolve(import.meta.dir, "../../");
@@ -19,7 +21,7 @@ export async function setupCronJob(
   const logPath = path.join(rootDir, "../dbsnap.log");
   
   const host = dbHostType === "local" ? "localhost" : "db";
-  const command = `cd ${rootDir} && ${binaryPath} --run --container ${dockerContainer} --host ${host} --port ${port} >> ${logPath} 2>&1`;
+  const command = `cd ${rootDir} && ${binaryPath} --run --container ${dockerContainer} --host ${host} --port ${port} --dbname ${dbName} >> ${logPath} 2>&1`;
   const cronLine = `${cronExpression} ${command}`;
 
   try {
@@ -63,12 +65,13 @@ export async function listCronJobs(onLog?: (msg: string) => void): Promise<CronJ
     );
     
     for (const line of lines) {
-      const match = line.match(/^(.+?\s+.+?\s+.+?\s+.+?\s+.+?)\s+.*--container\s+(\S+)/);
+      const match = line.match(/^(.+?\s+.+?\s+.+?\s+.+?\s+.+?)\s+.*--container\s+(\S+).*--dbname\s+(\S+)/);
       if (match && match[1] && match[2]) {
         jobs.push({
           expression: match[1],
           container: match[2],
           command: line,
+          dbName: match[3],
         });
       }
     }
