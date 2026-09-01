@@ -1,0 +1,514 @@
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+Starting headless backup for container: Apogee_2026-postgres
+Host: localhost, Port: 5432, Database: postgres
+🚀 Starting backup for database: postgres
+📦 Target: container Apogee_2026-postgres
+🐳 Using docker container: Apogee_2026-postgres
+❌ Headless Backup Error: 66 | 
+67 |   if (password) {
+68 |     options.stdin = enc.encode(password + "\n");
+69 |   }
+70 | 
+71 |   const proc = spawn(cmd, options);
+                    ^
+error: Executable not found in $PATH: "docker"
+  path: "docker",
+ errno: -2,
+  code: "ENOENT"
+
+      at runSudo (/Users/rishit/Coding/dbsnap/dbsnap/src/utils/exec.ts:71:16)
+      at takeBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/services/backup.ts:73:9)
+      at async runHeadlessBackup (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:35:29)
+      at async main (/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx:85:11)
+
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.0@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.0@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.1@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.2@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.2@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module '@opentui/react/jsx-dev-runtime' from '/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/react@19.2.6@@@1/cjs/react-jsx-dev-runtime.development.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.5@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module '@opentui/react/jsx-dev-runtime' from '/Users/rishit/Coding/dbsnap/dbsnap/src/index.tsx'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.8@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.8@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.15@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/react@19.2.6@@@1/cjs/react-jsx-dev-runtime.development.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.15@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.15@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.15@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.2.15@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.3.0@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: EISDIR reading "/Users/rishit/.bun/install/cache/bignumber.js@9.3.1@@@1 agent@1.7.2@@@1/bignumber.js"
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.3.0@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.3.1@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.3.1@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.3.2@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.3.2@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.3.2@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/react@19.2.7@@@1/cjs/react-jsx-dev-runtime.development.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.3.4@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.3.4@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.0@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.1@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.1@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.1@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.1@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.1@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.1@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.1@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.1@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.1@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.2@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.2@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.2@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.2@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.2@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.2@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/react@19.2.7@@@1/cjs/react-jsx-dev-runtime.development.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.2@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.2@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.3@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.3@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.3@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.3@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.3@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find module 'react/jsx-dev-runtime' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.3@@@1/jsx-dev-runtime.js'
+
+Bun v1.3.10 (macOS arm64)
+error: Cannot find package 'react' from '/Users/rishit/.bun/install/cache/@opentui/react@0.4.3@@@1/index.js'
+
+Bun v1.3.10 (macOS arm64)
